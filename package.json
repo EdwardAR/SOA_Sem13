@@ -1,0 +1,23 @@
+{
+  "name": "deliveryjs",
+  "version": "1.0.0",
+  "description": "DeliveryJS - Microservicios de pedidos y reparto de comida",
+  "scripts": {
+    "start:orchestrator": "node orchestrator/index.js",
+    "start:users": "node services/users-service/index.js",
+    "start:restaurants": "node services/restaurants-service/index.js",
+    "start:delivery": "node services/delivery-service/index.js",
+    "start:payments": "node services/payments-service/index.js",
+    "start:notifications": "node services/notifications-service/index.js",
+    "dev": "npx concurrently \"npm run start:orchestrator\" \"npm run start:users\" \"npm run start:restaurants\" \"npm run start:delivery\" \"npm run start:payments\" \"npm run start:notifications\""
+  },
+  "dependencies": {
+    "axios": "^1.7.0",
+    "cors": "^2.8.5",
+    "express": "^4.19.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "nodemon": "^3.1.0"
+  }
+}

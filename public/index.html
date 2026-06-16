@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeliveryJS — Panel de Orquestación</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <img src="imgs/utp.png" alt="UTP" class="brand-logo">
+        <div>
+          <span class="brand-title">DeliveryJS</span>
+          <span class="brand-sub">Panel de Orquestación</span>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" title="Cambiar tema">&#9790;</button>
+        <div class="nav-status">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusLabel">Verificando servicios...</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-grid">
+    <!-- Columna izquierda: Arquitectura + Formulario -->
+    <div class="left-col">
+      <!-- Arquitectura -->
+      <section class="card architecture-card">
+        <div class="card-header">
+          <h2>Arquitectura de Microservicios</h2>
+          <span class="badge">6 servicios</span>
+        </div>
+        <div class="arch-canvas">
+          <div class="arch-node orchestrator-node" data-service="orchestrator">
+            <div class="node-icon">&#9881;</div>
+            <div class="node-label">Orquestador</div>
+            <div class="node-port">:3000</div>
+          </div>
+          <div class="arch-connector main-connector">
+            <div class="conn-line"></div>
+            <div class="conn-arrow"></div>
+          </div>
+          <div class="arch-services">
+            <div class="arch-service" data-service="users">
+              <div class="node-icon">&#128100;</div>
+              <div class="node-label">Usuarios</div>
+              <div class="node-port">:3001</div>
+            </div>
+            <div class="arch-service" data-service="restaurants">
+              <div class="node-icon">&#127829;</div>
+              <div class="node-label">Restaurantes</div>
+              <div class="node-port">:3002</div>
+            </div>
+            <div class="arch-service" data-service="delivery">
+              <div class="node-icon">&#128666;</div>
+              <div class="node-label">Repartidores</div>
+              <div class="node-port">:3003</div>
+            </div>
+            <div class="arch-service" data-service="payments">
+              <div class="node-icon">&#128179;</div>
+              <div class="node-label">Pagos</div>
+              <div class="node-port">:3004</div>
+            </div>
+            <div class="arch-service" data-service="notifications">
+              <div class="node-icon">&#128276;</div>
+              <div class="node-label">Notificaciones</div>
+              <div class="node-port">:3005</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Formulario -->
+      <section class="card form-card">
+        <div class="card-header">
+          <h2>Nuevo Pedido</h2>
+          <span class="badge badge-form">POST /pedidos</span>
+        </div>
+        <form id="orderForm" class="order-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="usuarioId">Usuario ID</label>
+              <input type="number" id="usuarioId" min="1" max="2" value="1" required>
+              <span class="form-hint">1 = Carlos Pérez, 2 = María López</span>
+            </div>
+            <div class="form-group">
+              <label for="restauranteId">Restaurante ID</label>
+              <input type="number" id="restauranteId" min="1" max="2" value="1" required>
+              <span class="form-hint">1 = Pizza House, 2 = Burger Express</span>
+            </div>
+            <div class="form-group">
+              <label for="itemId">Item ID</label>
+              <input type="number" id="itemId" min="1" max="2" value="1" required>
+              <span class="form-hint">Ver menú disponible</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="cardNumber">Número de tarjeta</label>
+              <input type="text" id="cardNumber" value="4111111111111111" required>
+            </div>
+            <div class="form-group">
+              <label for="cardCvv">CVV</label>
+              <input type="text" id="cardCvv" value="123" required>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+              <span class="btn-icon">&#9654;</span>
+              <span>Crear Pedido</span>
+            </button>
+            <button type="button" class="btn btn-secondary" id="resetBtn">
+              <span class="btn-icon">&#8634;</span>
+              <span>Limpiar</span>
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <!-- Columna derecha: Timeline de flujo -->
+    <div class="right-col">
+      <section class="card timeline-card">
+        <div class="card-header">
+          <h2>Flujo de Orquestación</h2>
+          <span class="badge" id="stepCounter">0 / 6 pasos</span>
+        </div>
+        <div class="timeline" id="timeline">
+          <div class="timeline-step" data-step="1">
+            <div class="step-indicator">
+              <div class="step-dot">1</div>
+              <div class="step-line"></div>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Validar Usuario</div>
+              <div class="step-desc">GET /usuarios/:id</div>
+              <div class="step-status status-pending">Pendiente</div>
+            </div>
+            <div class="step-service users-color">Usuarios :3001</div>
+          </div>
+          <div class="timeline-step" data-step="2">
+            <div class="step-indicator">
+              <div class="step-dot">2</div>
+              <div class="step-line"></div>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Consultar Menú</div>
+              <div class="step-desc">GET /restaurantes/:id/menu</div>
+              <div class="step-status status-pending">Pendiente</div>
+            </div>
+            <div class="step-service restaurants-color">Restaurantes :3002</div>
+          </div>
+          <div class="timeline-step" data-step="3">
+            <div class="step-indicator">
+              <div class="step-dot">3</div>
+              <div class="step-line"></div>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Procesar Pago</div>
+              <div class="step-desc">POST /pagos/procesar</div>
+              <div class="step-status status-pending">Pendiente</div>
+            </div>
+            <div class="step-service payments-color">Pagos :3004</div>
+          </div>
+          <div class="timeline-step" data-step="4">
+            <div class="step-indicator">
+              <div class="step-dot">4</div>
+              <div class="step-line"></div>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Marcar Pedido</div>
+              <div class="step-desc">POST /restaurantes/:id/pedido</div>
+              <div class="step-status status-pending">Pendiente</div>
+            </div>
+            <div class="step-service restaurants-color">Restaurantes :3002</div>
+          </div>
+          <div class="timeline-step" data-step="5">
+            <div class="step-indicator">
+              <div class="step-dot">5</div>
+              <div class="step-line"></div>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Asignar Repartidor</div>
+              <div class="step-desc">GET /repartidores/disponibles → POST /repartidores/:id/asignar</div>
+              <div class="step-status status-pending">Pendiente</div>
+            </div>
+            <div class="step-service delivery-color">Repartidores :3003</div>
+          </div>
+          <div class="timeline-step" data-step="6">
+            <div class="step-indicator">
+              <div class="step-dot">6</div>
+              <div class="step-line"></div>
+            </div>
+            <div class="step-content">
+              <div class="step-title">Enviar Notificación</div>
+              <div class="step-desc">POST /notificaciones/enviar</div>
+              <div class="step-status status-pending">Pendiente</div>
+            </div>
+            <div class="step-service notifications-color">Notificaciones :3005</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Respuesta -->
+      <section class="card response-card" id="responseCard" style="display:none;">
+        <div class="card-header">
+          <h2>Respuesta</h2>
+          <span class="badge" id="responseBadge">Éxito</span>
+        </div>
+        <div class="response-body" id="responseBody"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
