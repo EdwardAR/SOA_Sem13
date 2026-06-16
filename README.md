@@ -9,6 +9,8 @@ Simulación de microservicios para pedidos y reparto de comida con Node.js + Exp
 
   <img width="1333" height="905" alt="image" src="https://github.com/user-attachments/assets/c729863d-c7a5-47fc-9b75-46f6612442bc" />
 </div>
+
+
 ## Arquitectura
 
 Orquestador central que coordina 5 microservicios. No hay comunicación directa entre servicios.
