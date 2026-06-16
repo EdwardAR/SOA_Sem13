@@ -2,6 +2,13 @@
 
 Simulación de microservicios para pedidos y reparto de comida con Node.js + Express. Un orquestador central coordina 5 microservicios independientes (usuarios, restaurantes, repartidores, pagos y notificaciones) ejecutando un flujo secuencial de 6 pasos para procesar un pedido, desde la validación del cliente hasta la notificación de envío. Incluye un panel web con visualización en tiempo real del flujo, formulario interactivo y notificaciones con sonido al completar el proceso.
 
+<div align="center">
+  <img width="1368" height="903" alt="image" src="https://github.com/user-attachments/assets/ca41f7ed-62a7-44bd-b7c1-3959464c8033" />
+
+  <br><br>
+
+  <img width="1333" height="905" alt="image" src="https://github.com/user-attachments/assets/c729863d-c7a5-47fc-9b75-46f6612442bc" />
+</div>
 ## Arquitectura
 
 Orquestador central que coordina 5 microservicios. No hay comunicación directa entre servicios.
