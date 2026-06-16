@@ -90,6 +90,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
   restauranteSelect.addEventListener('change', updateMenu);
 
+  function filterDigits(e) {
+    e.target.value = e.target.value.replace(/\D/g, '');
+  }
+  document.getElementById('cardNumber').addEventListener('input', filterDigits);
+  document.getElementById('cardCvv').addEventListener('input', filterDigits);
+
+  document.getElementById('cardNumber').addEventListener('blur', function () {
+    const val = this.value;
+    const hint = document.getElementById('cardNumberHint');
+    if (val && (val.length < 13 || val.length > 19)) {
+      hint.textContent = 'Debe tener entre 13 y 19 dígitos';
+      hint.style.color = 'var(--error)';
+    } else {
+      hint.textContent = '13-19 dígitos';
+      hint.style.color = '';
+    }
+    this.closest('.form-group').classList.toggle('field-error', val && (val.length < 13 || val.length > 19));
+  });
+  document.getElementById('cardCvv').addEventListener('blur', function () {
+    const val = this.value;
+    const hint = document.getElementById('cardCvvHint');
+    if (val && val.length !== 3) {
+      hint.textContent = 'Debe tener exactamente 3 dígitos';
+      hint.style.color = 'var(--error)';
+    } else {
+      hint.textContent = '3 dígitos';
+      hint.style.color = '';
+    }
+    this.closest('.form-group').classList.toggle('field-error', val && val.length !== 3);
+  });
+
   resetBtn.addEventListener('click', () => resetForm());
   form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -106,8 +137,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const cardNumber = document.getElementById('cardNumber').value.trim();
     const cardCvv = document.getElementById('cardCvv').value.trim();
 
-    if (!cardNumber || !cardCvv) {
-      showError('Completa todos los datos de la tarjeta');
+    if (!cardNumber || cardNumber.length < 13 || cardNumber.length > 19) {
+      showError('El número de tarjeta debe tener entre 13 y 19 dígitos');
+      document.getElementById('cardNumber').focus();
+      return;
+    }
+    if (!cardCvv || cardCvv.length !== 3) {
+      showError('El CVV debe tener exactamente 3 dígitos');
+      document.getElementById('cardCvv').focus();
       return;
     }
 
@@ -217,7 +254,81 @@ document.addEventListener('DOMContentLoaded', () => {
     return 2;
   }
 
+  function playBellSound() {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const now = audioCtx.currentTime;
+
+      const osc1 = audioCtx.createOscillator();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(880, now);
+
+      const osc2 = audioCtx.createOscillator();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(1320, now);
+
+      const osc3 = audioCtx.createOscillator();
+      osc3.type = 'sine';
+      osc3.frequency.setValueAtTime(1760, now);
+
+      const gain1 = audioCtx.createGain();
+      gain1.gain.setValueAtTime(0.25, now);
+      gain1.gain.exponentialRampToValueAtTime(0.01, now + 1.5);
+
+      const gain2 = audioCtx.createGain();
+      gain2.gain.setValueAtTime(0.12, now);
+      gain2.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
+
+      const gain3 = audioCtx.createGain();
+      gain3.gain.setValueAtTime(0.06, now);
+      gain3.gain.exponentialRampToValueAtTime(0.01, now + 1.0);
+
+      osc1.connect(gain1).connect(audioCtx.destination);
+      osc2.connect(gain2).connect(audioCtx.destination);
+      osc3.connect(gain3).connect(audioCtx.destination);
+
+      osc1.start(now);
+      osc2.start(now);
+      osc3.start(now);
+      osc1.stop(now + 1.5);
+      osc2.stop(now + 1.2);
+      osc3.stop(now + 1.0);
+    } catch (_) {}
+  }
+
+  function showToast(title, message) {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.innerHTML = `
+      <div class="toast-icon">&#128276;</div>
+      <div class="toast-body">
+        <div class="toast-title">${title}</div>
+        <div class="toast-message">${message}</div>
+      </div>
+      <button class="toast-close">&times;</button>
+    `;
+    container.appendChild(el);
+
+    el.querySelector('.toast-close').addEventListener('click', () => {
+      el.classList.add('out');
+      setTimeout(() => el.remove(), 350);
+    });
+
+    setTimeout(() => {
+      if (el.parentNode) {
+        el.classList.add('out');
+        setTimeout(() => el.remove(), 350);
+      }
+    }, 5000);
+  }
+
   function showSuccess(data) {
+    playBellSound();
+    showToast('Proceso finalizado', 'El pedido se completó exitosamente');
+
     responseCard.style.display = 'block';
     document.getElementById('responseBadge').textContent = 'Éxito';
     document.getElementById('responseBadge').style.cssText = 'background: var(--success-bg); color: var(--success); border-color: rgba(34,197,94,0.3);';

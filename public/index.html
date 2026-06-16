@@ -111,11 +111,13 @@
           <div class="form-row">
             <div class="form-group">
               <label for="cardNumber">Número de tarjeta</label>
-              <input type="text" id="cardNumber" value="4111111111111111" required>
+              <input type="text" id="cardNumber" value="4111111111111111" inputmode="numeric" pattern="[0-9]{13,19}" required maxlength="19" autocomplete="cc-number">
+              <span class="form-hint" id="cardNumberHint">13-19 dígitos</span>
             </div>
             <div class="form-group">
               <label for="cardCvv">CVV</label>
-              <input type="text" id="cardCvv" value="123" required>
+              <input type="text" id="cardCvv" value="123" inputmode="numeric" pattern="[0-9]{3}" required maxlength="3" autocomplete="cc-csc">
+              <span class="form-hint" id="cardCvvHint">3 dígitos</span>
             </div>
           </div>
           <div class="form-actions">
@@ -238,6 +240,7 @@
     </div>
   </footer>
 
+  <div id="toastContainer"></div>
   <script src="app.js"></script>
 </body>
 </html>
