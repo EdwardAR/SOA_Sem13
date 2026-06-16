@@ -24,6 +24,10 @@ const restaurantes = {
 
 let pedidosEnPreparacion = {};
 
+app.get('/restaurantes', (req, res) => {
+  res.json(Object.values(restaurantes));
+});
+
 app.get('/restaurantes/:id/menu', (req, res) => {
   const restaurante = restaurantes[req.params.id];
   if (!restaurante) return res.status(404).json({ error: 'Restaurante no encontrado' });

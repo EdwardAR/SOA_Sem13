@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 app.use(express.json());
-app.use(express.static('public'));
 const PORT = 3000;
 
 const axios = require('axios');
@@ -12,6 +11,27 @@ const DELIVERY_URL = 'http://localhost:3003';
 const PAYMENTS_URL = 'http://localhost:3004';
 const NOTIFICATIONS_URL = 'http://localhost:3005';
 
+// API routes must be before static middleware
+app.get('/api/usuarios', async (req, res) => {
+  try {
+    const response = await axios.get(`${USERS_URL}/usuarios`);
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener usuarios' });
+  }
+});
+
+app.get('/api/restaurantes', async (req, res) => {
+  try {
+    const response = await axios.get(`${RESTAURANTS_URL}/restaurantes`);
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener restaurantes' });
+  }
+});
+
+app.use(express.static('public'));
+
 app.post('/pedidos', async (req, res) => {
   const { usuarioId, restauranteId, itemId, tarjeta } = req.body;
 
@@ -19,10 +39,13 @@ app.post('/pedidos', async (req, res) => {
     return res.status(400).json({ error: 'Faltan campos requeridos: usuarioId, restauranteId, itemId, tarjeta' });
   }
 
+  const delay = ms => new Promise(r => setTimeout(r, ms));
+
   try {
     // Paso 1: Validar usuario
     const usuarioRes = await axios.get(`${USERS_URL}/usuarios/${usuarioId}`);
     const usuario = usuarioRes.data;
+    await delay(3000);
 
     // Paso 2: Obtener menú y precio del restaurante
     const menuRes = await axios.get(`${RESTAURANTS_URL}/restaurantes/${restauranteId}/menu`);
@@ -30,6 +53,7 @@ app.post('/pedidos', async (req, res) => {
     if (!item) {
       return res.status(400).json({ error: 'Item no encontrado en el menú del restaurante' });
     }
+    await delay(3000);
 
     // Paso 3: Procesar pago
     const pagoRes = await axios.post(`${PAYMENTS_URL}/pagos/procesar`, {
@@ -40,9 +64,11 @@ app.post('/pedidos', async (req, res) => {
     if (pagoRes.data.status !== 'aprobado') {
       return res.status(402).json({ error: 'Pago rechazado', detalle: pagoRes.data });
     }
+    await delay(3000);
 
     // Paso 4: Marcar pedido como "En preparación" en el restaurante
     await axios.post(`${RESTAURANTS_URL}/restaurantes/${restauranteId}/pedido`, { itemId });
+    await delay(3000);
 
     // Paso 5: Asignar repartidor disponible
     const disponiblesRes = await axios.get(`${DELIVERY_URL}/repartidores/disponibles`);
@@ -54,6 +80,7 @@ app.post('/pedidos', async (req, res) => {
 
     const repartidor = disponibles[0];
     await axios.post(`${DELIVERY_URL}/repartidores/${repartidor.id}/asignar`);
+    await delay(3000);
 
     // Paso 6: Enviar notificación
     await axios.post(`${NOTIFICATIONS_URL}/notificaciones/enviar`, {
@@ -65,12 +92,22 @@ app.post('/pedidos', async (req, res) => {
     res.json({
       mensaje: 'Pedido creado exitosamente',
       pedido: {
-        usuario: usuario.nombre,
+        usuario: {
+          nombre: usuario.nombre,
+          email: usuario.email,
+          direccion: usuario.direccion
+        },
         restaurante: menuRes.data.restaurante,
-        item: item.nombre,
-        precio: item.precio,
+        item: {
+          nombre: item.nombre,
+          precio: item.precio
+        },
+        total: item.precio,
         estado: 'En camino',
-        repartidor: repartidor.nombre
+        repartidor: {
+          nombre: repartidor.nombre,
+          id: repartidor.id
+        }
       }
     });
 

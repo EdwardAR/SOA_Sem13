@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>DeliveryJS — Panel de Orquestación</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -19,7 +22,7 @@
         </div>
       </div>
       <div class="nav-actions">
-        <button class="theme-toggle" id="themeToggle" title="Cambiar tema">&#9790;</button>
+        <button class="theme-toggle" id="themeToggle" title="Cambiar tema">☾</button>
         <div class="nav-status">
           <span class="status-dot" id="statusDot"></span>
           <span id="statusLabel">Verificando servicios...</span>
@@ -86,19 +89,23 @@
         <form id="orderForm" class="order-form">
           <div class="form-row">
             <div class="form-group">
-              <label for="usuarioId">Usuario ID</label>
-              <input type="number" id="usuarioId" min="1" max="2" value="1" required>
-              <span class="form-hint">1 = Carlos Pérez, 2 = María López</span>
+              <label for="usuarioId">Cliente</label>
+              <select id="usuarioId" required>
+                <option value="">Cargando...</option>
+              </select>
             </div>
             <div class="form-group">
-              <label for="restauranteId">Restaurante ID</label>
-              <input type="number" id="restauranteId" min="1" max="2" value="1" required>
-              <span class="form-hint">1 = Pizza House, 2 = Burger Express</span>
+              <label for="restauranteId">Restaurante</label>
+              <select id="restauranteId" required>
+                <option value="">Cargando...</option>
+              </select>
             </div>
             <div class="form-group">
-              <label for="itemId">Item ID</label>
-              <input type="number" id="itemId" min="1" max="2" value="1" required>
-              <span class="form-hint">Ver menú disponible</span>
+              <label for="itemId">Item del menú</label>
+              <select id="itemId" required>
+                <option value="">Selecciona un restaurante</option>
+              </select>
+              <span class="form-hint" id="menuHint">—</span>
             </div>
           </div>
           <div class="form-row">
@@ -218,6 +225,18 @@
       </section>
     </div>
   </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-icon">&#9881;</span>
+        <span><strong>DeliveryJS</strong> — Microservicios de pedidos y reparto</span>
+      </div>
+      <div class="footer-copy">
+        Creado por <strong>Edward Antonio</strong> &copy; 2026
+      </div>
+    </div>
+  </footer>
 
   <script src="app.js"></script>
 </body>

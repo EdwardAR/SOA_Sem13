@@ -6,7 +6,14 @@ const PORT = 3003;
 const repartidores = {
   1: { id: 1, nombre: 'Luis Ramírez', estado: 'Libre' },
   2: { id: 2, nombre: 'Ana Torres', estado: 'Libre' },
-  3: { id: 3, nombre: 'Pedro Gómez', estado: 'Ocupado' }
+  3: { id: 3, nombre: 'Pedro Gómez', estado: 'Libre' },
+  4: { id: 4, nombre: 'Carmen Castillo', estado: 'Libre' },
+  5: { id: 5, nombre: 'José Martínez', estado: 'Libre' },
+  6: { id: 6, nombre: 'Lucía Fernández', estado: 'Libre' },
+  7: { id: 7, nombre: 'Diego Rojas', estado: 'Libre' },
+  8: { id: 8, nombre: 'Valentina Muñoz', estado: 'Libre' },
+  9: { id: 9, nombre: 'Sofía Herrera', estado: 'Ocupado' },
+  10: { id: 10, nombre: 'Mateo Vargas', estado: 'Ocupado' }
 };
 
 app.get('/repartidores/disponibles', (req, res) => {

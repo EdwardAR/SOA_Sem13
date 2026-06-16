@@ -1,9 +1,11 @@
-const STEP_DELAY = 500;
+const STEP_DELAY = 3000;
 const statusLabels = {
   online: 'Todos los servicios activos',
   offline: 'Error de conexión con servicios',
   checking: 'Verificando servicios...'
 };
+
+let restaurantesData = {};
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('orderForm');
@@ -18,13 +20,75 @@ document.addEventListener('DOMContentLoaded', () => {
   // Theme toggle
   const savedTheme = localStorage.getItem('deliveryjs-theme') || 'dark';
   document.body.className = savedTheme === 'light' ? 'light-theme' : 'dark-theme';
-  themeToggle.textContent = savedTheme === 'light' ? '&#9790;' : '&#9788;';
+  themeToggle.textContent = savedTheme === 'light' ? '☀' : '☾';
   themeToggle.addEventListener('click', () => {
     const isLight = document.body.classList.contains('light-theme');
     document.body.className = isLight ? 'dark-theme' : 'light-theme';
     localStorage.setItem('deliveryjs-theme', isLight ? 'dark' : 'light');
-    themeToggle.innerHTML = isLight ? '&#9788;' : '&#9790;';
+    themeToggle.textContent = isLight ? '☾' : '☀';
   });
+
+  const usuarioSelect = document.getElementById('usuarioId');
+  const restauranteSelect = document.getElementById('restauranteId');
+  const itemSelect = document.getElementById('itemId');
+  const menuHint = document.getElementById('menuHint');
+
+  async function loadData() {
+    try {
+      console.log('Cargando datos desde API...');
+      const [usuariosRes, restaurantesRes] = await Promise.all([
+        fetch('/api/usuarios'),
+        fetch('/api/restaurantes')
+      ]);
+      console.log('Respuesta usuarios:', usuariosRes.status, usuariosRes.ok);
+      console.log('Respuesta restaurantes:', restaurantesRes.status, restaurantesRes.ok);
+      const usuarios = await usuariosRes.json();
+      const restaurantes = await restaurantesRes.json();
+      console.log('Usuarios cargados:', usuarios.length, 'Restaurantes cargados:', restaurantes.length);
+
+      usuarioSelect.innerHTML = '';
+      usuarios.forEach(u => {
+        const opt = document.createElement('option');
+        opt.value = u.id;
+        opt.textContent = `${u.nombre} — ${u.direccion}`;
+        usuarioSelect.appendChild(opt);
+      });
+
+      restaurantesData = {};
+      restauranteSelect.innerHTML = '';
+      restaurantes.forEach(r => {
+        restaurantesData[r.id] = r;
+        const opt = document.createElement('option');
+        opt.value = r.id;
+        opt.textContent = r.nombre;
+        restauranteSelect.appendChild(opt);
+      });
+
+      updateMenu();
+    } catch (err) {
+      console.error('Error al cargar datos', err);
+      usuarioSelect.innerHTML = '<option value="">Error al cargar</option>';
+      restauranteSelect.innerHTML = '<option value="">Error al cargar</option>';
+      itemSelect.innerHTML = '<option value="">Reinicia los servicios</option>';
+    }
+  }
+
+  function updateMenu() {
+    const rId = restauranteSelect.value;
+    const r = restaurantesData[rId];
+    if (!r) return;
+    itemSelect.innerHTML = '';
+    for (const [id, item] of Object.entries(r.menu)) {
+      const opt = document.createElement('option');
+      opt.value = id;
+      opt.dataset.price = item.precio;
+      opt.textContent = `${item.nombre} — $${item.precio.toFixed(2)}`;
+      itemSelect.appendChild(opt);
+    }
+    menuHint.textContent = r.nombre;
+  }
+
+  restauranteSelect.addEventListener('change', updateMenu);
 
   resetBtn.addEventListener('click', () => resetForm());
   form.addEventListener('submit', (e) => {
@@ -32,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
     createOrder();
   });
 
+  loadData();
   checkHealth();
 
   async function createOrder() {
@@ -157,16 +222,21 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('responseBadge').textContent = 'Éxito';
     document.getElementById('responseBadge').style.cssText = 'background: var(--success-bg); color: var(--success); border-color: rgba(34,197,94,0.3);';
     const p = data.pedido || {};
+    const u = p.usuario || {};
+    const i = p.item || {};
+    const r = p.repartidor || {};
     responseBody.innerHTML = `
       <div class="response-success">
         <h3>${data.mensaje || 'Pedido creado exitosamente'}</h3>
         <div class="response-detail">
-          <div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">${p.usuario || '-'}</div></div>
+          <div class="detail-item"><div class="detail-label">Cliente</div><div class="detail-value">${u.nombre || '-'}</div></div>
+          <div class="detail-item"><div class="detail-label">Email</div><div class="detail-value">${u.email || '-'}</div></div>
+          <div class="detail-item"><div class="detail-label">Dirección</div><div class="detail-value">${u.direccion || '-'}</div></div>
           <div class="detail-item"><div class="detail-label">Restaurante</div><div class="detail-value">${p.restaurante || '-'}</div></div>
-          <div class="detail-item"><div class="detail-label">Artículo</div><div class="detail-value">${p.item || '-'}</div></div>
-          <div class="detail-item"><div class="detail-label">Precio</div><div class="detail-value">$${(p.precio || 0).toFixed(2)}</div></div>
+          <div class="detail-item"><div class="detail-label">Artículo</div><div class="detail-value">${i.nombre || '-'}</div></div>
+          <div class="detail-item"><div class="detail-label">Total</div><div class="detail-value">$${(p.total || 0).toFixed(2)}</div></div>
           <div class="detail-item"><div class="detail-label">Estado</div><div class="detail-value">${p.estado || '-'}</div></div>
-          <div class="detail-item"><div class="detail-label">Repartidor</div><div class="detail-value">${p.repartidor || '-'}</div></div>
+          <div class="detail-item"><div class="detail-label">Repartidor</div><div class="detail-value">${r.nombre || '-'}</div></div>
         </div>
         <pre>${JSON.stringify(data, null, 2)}</pre>
       </div>`;
@@ -200,9 +270,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function resetForm() {
     document.getElementById('usuarioId').value = '1';
     document.getElementById('restauranteId').value = '1';
-    document.getElementById('itemId').value = '1';
     document.getElementById('cardNumber').value = '4111111111111111';
     document.getElementById('cardCvv').value = '123';
+    updateMenu();
     resetTimeline();
   }
 

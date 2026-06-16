@@ -89,6 +89,18 @@ npm run dev
 3. Completar el formulario y hacer clic en "Crear Pedido"
 4. Observar la animación del flujo paso a paso
 
+## Solución de problemas
+
+### Los selects solo muestran 2 usuarios/restaurantes
+
+Si después de modificar el código los selects del formulario siguen mostrando solo los datos antiguos:
+
+1. **Reinicia TODOS los servicios** — Detén cada terminal con `Ctrl+C` y vuelve a ejecutar los 6 servicios. Los nuevos endpoints `GET /usuarios` y `GET /restaurantes` requieren que los servicios de usuarios y restaurantes se reinicien.
+
+2. **Hard refresh en el navegador** — Presiona `Ctrl+F5` o `Ctrl+Shift+R` para forzar la recarga del HTML/JS sin usar caché del navegador.
+
+3. **Verifica que no hay errores** — Abre la Consola del Navegador (F12 → Console). Si ves `Error al cargar datos`, significa que algún servicio no se inició correctamente o los puertos no coinciden.
+
 ## Cómo probar con curl
 
 ```bash
