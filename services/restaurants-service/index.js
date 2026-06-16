@@ -9,7 +9,9 @@ const restaurantes = {
     nombre: 'Pizza House',
     menu: {
       1: { nombre: 'Pizza Americana', precio: 25.90 },
-      2: { nombre: 'Pizza Hawaiana', precio: 27.50 }
+      2: { nombre: 'Pizza Hawaiana', precio: 27.50 },
+      3: { nombre: 'Pizza Pepperoni', precio: 29.00 },
+      4: { nombre: 'Pizza Vegetariana', precio: 24.50 }
     }
   },
   2: {
@@ -18,6 +20,22 @@ const restaurantes = {
     menu: {
       1: { nombre: 'Hamburguesa Clásica', precio: 18.90 },
       2: { nombre: 'Papas Fritas', precio: 8.50 }
+    }
+  },
+  3: {
+    id: 3,
+    nombre: 'Sushi Roll',
+    menu: {
+      1: { nombre: 'Roll Especial', precio: 32.00 },
+      2: { nombre: 'Nigiri Salmón', precio: 28.50 }
+    }
+  },
+  4: {
+    id: 4,
+    nombre: 'La Cocina de Mamá',
+    menu: {
+      1: { nombre: 'Lomo Saltado', precio: 22.00 },
+      2: { nombre: 'Ceviche Mixto', precio: 24.00 }
     }
   }
 };

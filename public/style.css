@@ -75,6 +75,9 @@ body {
   width: auto;
   border-radius: 8px;
   margin-left: -8px;
+  background: #fff;
+  padding: 4px;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.3);
 }
 .brand-icon {
   font-size: 28px;

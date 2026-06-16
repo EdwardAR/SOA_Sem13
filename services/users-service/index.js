@@ -4,7 +4,11 @@ const PORT = 3001;
 
 const usuarios = {
   1: { id: 1, nombre: 'Carlos Pérez', email: 'carlos@email.com', direccion: 'Av. Principal 123' },
-  2: { id: 2, nombre: 'María López', email: 'maria@email.com', direccion: 'Calle Lima 456' }
+  2: { id: 2, nombre: 'María López', email: 'maria@email.com', direccion: 'Calle Lima 456' },
+  3: { id: 3, nombre: 'Pedro García', email: 'pedro@email.com', direccion: 'Jr. Las Flores 789' },
+  4: { id: 4, nombre: 'Ana Martínez', email: 'ana@email.com', direccion: 'Av. Sol 321' },
+  5: { id: 5, nombre: 'Luis Fernández', email: 'luis@email.com', direccion: 'Calle Luna 654' },
+  6: { id: 6, nombre: 'Rosa Castillo', email: 'rosa@email.com', direccion: 'Av. Primavera 987' }
 };
 
 app.get('/usuarios', (req, res) => {
